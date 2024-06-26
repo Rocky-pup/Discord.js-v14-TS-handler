@@ -20,7 +20,7 @@ import {
     optionTypes
 } from '../utils/otherTypes';
 import { ErryDatabase } from './Database';
-import { ErryFunctions } from './Functions';
+import { ErryFunctions, walks } from './Functions';
 import {
     ErryLanguage, getSlashCommandDescription, getSlashCommandLocalizations, getSlashCommandName
 } from './Language';
@@ -547,16 +547,3 @@ export function getDefaultClientOptions() {
 }
 
 export const globalFilePath = (path: string): string => pathToFileURL(path)?.href || path;
-
-async function walks(path: string, recursive: boolean = true): Promise<string[]> {
-    let files: string[] = [];
-    const items = await promises.readdir(path, { withFileTypes: true });
-    for (const item of items) {
-        if (item.isDirectory() && recursive) {
-            files = [ ...files, ...(await walks(`${path}/${item.name}`)) ];
-        } else if(item.isFile()) {
-            files.push(`${path}/${item.name}`);
-        }
-    }
-    return files;
-};

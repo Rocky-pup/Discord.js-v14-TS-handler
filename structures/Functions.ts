@@ -2,6 +2,7 @@ import {
     ActivityType, ChannelType, EmbedAuthorOptions, EmbedBuilder, EmbedFooterOptions, Guild,
     GuildChannel, LocaleString, parseEmoji, PartialEmoji, PermissionsBitField
 } from 'discord.js';
+import { promises } from 'fs';
 
 import { Config, config, Embed } from '../config/config';
 import { BotCounters, emojiMatches } from '../utils/otherTypes';
@@ -153,15 +154,29 @@ export class ErryFunctions {
     let iconURL = authoricon;
     let url = authorurl;
     if(!iconURL || iconURL.length < 1) iconURL = `${this.client.user?.displayAvatarURL()}`;
-    if(!url || url.length < 1) url = `https://dsc.gg/banditcamp`;
+    if(!url || url.length < 1) url = `https://d.erry.xyz`;
     iconURL = iconURL.trim();
     name = `${name.trim().substring(0, 25)}`
-    if(!url.startsWith("https://") && !url.startsWith("http://")) url = `https://dsc.gg/banditcamp`;
+    if(!url.startsWith("https://") && !url.startsWith("http://")) url = `https://d.erry.xyz`;
     if(!iconURL.startsWith("https://") && !iconURL.startsWith("http://")) iconURL = this.client.user?.displayAvatarURL();
     if(![".png", ".jpg", ".wpeg", ".webm", ".gif"].some(d => iconURL?.toLowerCase().endsWith(d))) iconURL = this.client.user?.displayAvatarURL();
     return { name: name, iconURL: iconURL, url: url }
   };
 }
+
+
+export async function walks(path: string, recursive: boolean = true): Promise<string[]> {
+  let files: string[] = [];
+  const items = await promises.readdir(path, { withFileTypes: true });
+  for (const item of items) {
+      if (item.isDirectory() && recursive) {
+          files = [ ...files, ...(await walks(`${path}/${item.name}`)) ];
+      } else if(item.isFile()) {
+          files.push(`${path}/${item.name}`);
+      }
+  }
+  return files;
+};
 
 export const textBasedCats = [ChannelType.GuildText, ChannelType.AnnouncementThread, ChannelType.PublicThread, ChannelType.PrivateThread, ChannelType.GuildCategory, ChannelType.GuildAnnouncement];
 export const voiceBasedCats = [ChannelType.GuildStageVoice, ChannelType.GuildVoice];

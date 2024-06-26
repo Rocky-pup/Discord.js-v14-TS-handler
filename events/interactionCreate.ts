@@ -20,7 +20,7 @@ export default async (client: BotClient, interaction: Interaction) => {
     var ls: LocaleString = GuildSettings?.language as LocaleString || "en"
     var es: Embed = GuildSettings?.embed as Embed || client.config.embed
     if (!GuildSettings || !ls || !es) {
-        await client.functions.createNewGuildDatabase(interaction.guild.id)
+        await client.db.createGuildDatabase(interaction.guild.id)
         GuildSettings = await client.db.settings.findUniqueOrThrow({
             where: {
               guildId: interaction.guild?.id,
